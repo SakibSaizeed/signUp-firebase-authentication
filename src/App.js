@@ -9,6 +9,8 @@ const auth = getAuth(app);
 function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [validated, setValidated] = useState(false);
+  const [error, setError] = useState("");
   const handleEmail = (e) => {
     setEmail(e.target.value);
   };
@@ -27,6 +29,19 @@ function App() {
         console.error(error);
       });
     e.preventDefault();
+    //for validation bootstrap
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    if (!/(?=.*[0-9])/.test(password)) {
+      setError("Password should contain at least one number");
+      return;
+    }
+    setValidated(true);
+    setError("");
   };
 
   return (
@@ -37,23 +52,29 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control
+              required
               type="email"
               placeholder="Enter email"
               onBlur={handleEmail}
             />
-            <Form.Text className="text-muted">
-              We'll never share your email with anyone else.
-            </Form.Text>
+            <Form.Control.Feedback type="invalid">
+              Please choose a valid email.
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control
+              required
               type="password"
               placeholder="Password"
               onBlur={handlePassword}
             />
+            <Form.Control.Feedback type="invalid">
+              Please provide a valid password!
+            </Form.Control.Feedback>
           </Form.Group>
+          <p className="text-danger">{error}</p>
           <Button variant="primary" type="submit">
             Submit
           </Button>
