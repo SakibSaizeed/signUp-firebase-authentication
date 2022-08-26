@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "./firebase.init";
@@ -75,6 +76,11 @@ function App() {
       console.log("Email varification Sent");
     });
   };
+  const handleForgetPassword = () => {
+    sendPasswordResetEmail(auth, email).then(() => {
+      console.log("Reset email sent in inbox", msg);
+    });
+  };
   return (
     <div>
       <div className="Registration-form w-50 mx-auto mt-5">
@@ -116,6 +122,9 @@ function App() {
           <p className="text-danger">{msg}</p>
           <Button variant="primary" type="submit">
             {registerd ? "Login" : "Register"}
+          </Button>
+          <Button variant="link" onClick={handleForgetPassword}>
+            {registerd ? " Forget password?" : ""}
           </Button>
         </Form>
       </div>
