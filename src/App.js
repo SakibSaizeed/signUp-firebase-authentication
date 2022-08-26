@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "./firebase.init";
@@ -45,6 +46,7 @@ function App() {
         .then((result) => {
           const user = result.user;
           console.log(user);
+          varifyEmail();
         })
         .catch((error) => {
           console.error(error);
@@ -68,6 +70,11 @@ function App() {
     setSuccessMsg("Thanks");
   };
 
+  const varifyEmail = () => {
+    sendEmailVerification(auth.currentUser).then(() => {
+      console.log("Email varification Sent");
+    });
+  };
   return (
     <div>
       <div className="Registration-form w-50 mx-auto mt-5">
