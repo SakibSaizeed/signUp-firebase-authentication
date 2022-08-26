@@ -1,6 +1,10 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import app from "./firebase.init";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -10,24 +14,43 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
+  const [registerd, setRegisterd] = useState(false);
   const [error, setError] = useState("");
+  const [msg, setSuccessMsg] = useState("");
   const handleEmail = (e) => {
     setEmail(e.target.value);
   };
   const handlePassword = (e) => {
     setPassword(e.target.value);
   };
+  const handleCheckbox = (event) => {
+    setRegisterd(event.target.checked);
+  };
 
   const handleFormSubmit = (e) => {
     console.log("Submit done", email, password);
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((result) => {
-        const user = result.user;
-        console.log(user);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+
+    if (registerd) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          console.error(error);
+          setError(error.message);
+        });
+    } else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          console.error(error);
+          setError(error.message);
+        });
+    }
     e.preventDefault();
     //for validation bootstrap
     const form = e.currentTarget;
@@ -42,12 +65,13 @@ function App() {
     }
     setValidated(true);
     setError("");
+    setSuccessMsg("Thanks");
   };
 
   return (
     <div>
       <div className="Registration-form w-50 mx-auto mt-5">
-        <h1 className="text-info">Sign Up</h1>
+        <h1 className="text-info">Please {registerd ? "Login" : "Sign Up"}</h1>
         <Form onSubmit={handleFormSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
@@ -74,9 +98,17 @@ function App() {
               Please provide a valid password!
             </Form.Control.Feedback>
           </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicCheckbox">
+            <Form.Check
+              type="checkbox"
+              label="Already Registerd?"
+              onChange={handleCheckbox}
+            />
+          </Form.Group>
           <p className="text-danger">{error}</p>
+          <p className="text-danger">{msg}</p>
           <Button variant="primary" type="submit">
-            Submit
+            {registerd ? "Login" : "Register"}
           </Button>
         </Form>
       </div>
